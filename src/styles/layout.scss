@@ -1,0 +1,31 @@
+@use './mixin.scss' as *;
+
+$header-height: 52px;
+$sidebar-width: 280px;
+$primary: #3e517a;
+
+body{
+    // border: 1px solid red;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+}
+
+.Header{
+    height: $header-height;
+    background-color: $primary;
+    color: #f0f0f0;
+}
+
+.layout-2{
+    height: calc(100dvh - $header-height);
+}
+.Sidebar{
+    @include size(100%, $sidebar-width);
+}
+
+.Main{
+    @include size(100%, calc(100% - $sidebar-width));
+
+    overflow: hidden;
+}
