@@ -3,6 +3,11 @@
     align-items: center;
     justify-content: flex-start;
 }
+.useBetween{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
 .bd{
     border: 1px solid blue;
