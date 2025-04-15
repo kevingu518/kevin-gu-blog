@@ -1,42 +1,40 @@
-'use client';
-
-import { useEffect, useState } from "react";
 import ReactMarkdown from 'react-markdown';
+import matter from 'gray-matter'
 import rehypeHighlight from 'rehype-highlight';
+
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism'
+
+import { PrismaClient } from '@prisma/client';
+
+
 import 'highlight.js/styles/github.css';
 import './article.scss';
 
-export default function Page({ params }) {
-  const [article, setArticle] = useState(null);
-  const [loading, setLoading] = useState(true);
+const prisma = new PrismaClient();
 
-  useEffect(() => {
-    async function fetchArticle() {
-      try {
-        const res = await fetch(`/api/articles/${params.slug}`);
-        const data = await res.json();
-        if (res.ok) {
-          setArticle(data);
-        } else {
-          setArticle({ title: '文章未找到', content: '# 文章未找到\n請檢查 URL。' });
-        }
-      } catch (error) {
-        console.error('Error fetching article:', error);
-        setArticle({ title: '錯誤', content: '# 伺服器錯誤\n請稍後再試。' });
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchArticle();
-  }, [params.slug]);
 
-  if (loading) {
-    return <div>載入中...</div>;
+export default async function Page({ params }) {
+  if (!params || !params.slug) {
+    return <div>Invalid article slug</div>;
   }
+
+  const article = await prisma.article.findUnique({
+    where: { slug: params.slug },
+  }).catch((error) => {
+    console.error('Database error:', error);
+    return null;
+  }).finally(() => prisma.$disconnect());
+
+  const displayArticle = article || {
+    title: '文章未找到',
+    content: '# 文章未找到\n請檢查 URL。',
+  };
+
+  // console.log('Rendering content:', displayArticle.content);
   return (
-    <div className="article-container">
-      <h1>{article.title}</h1>
-      <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{article.content}</ReactMarkdown>
+    <div className="article-container prose prose-pre:bg-gray-100 prose-code:bg-gray-100 prose-code:before:content-none prose-code:after:content-none max-w-none">
+      <ReactMarkdown  rehypePlugins={[rehypeHighlight]}>{displayArticle.content.trim()}</ReactMarkdown>
     </div>
   );
 }

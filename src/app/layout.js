@@ -236,6 +236,7 @@ export default function RootLayout({ children }) {
                 mode="inline"
                 items={items}
               />
+              <span>Copyright © 2025 KevinGu</span>
             </PerfectScrollbar>
             <div className="Main">{children}</div>
           </div>

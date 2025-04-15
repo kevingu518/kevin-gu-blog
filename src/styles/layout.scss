@@ -22,7 +22,12 @@ body{
 }
 .Sidebar{
     @include size(100%, $sidebar-width);
+    @include shadow;
     overflow: hidden;
+    
+    .ant-menu.ant-menu-root.ant-menu-inline {
+        border-right: none;
+    }
 }
 
 .Main{
